@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Truck Locator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, select, button, checkbox {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        p {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Food Truck Locator</h1>
+    
+    <form id="locationForm">
+        <label for="locationOption">Choose a location option:</label>
+        <select id="locationOption" name="locationOption">
+            <option value="geolocation">Use Geolocation</option>
+            <option value="manual">Enter Manual Coordinates</option>
+        </select>
+
+        <div id="manualCoords" style="display: none;">
+            <label for="manualLatitude">Latitude:</label>
+            <input type="text" id="manualLatitude" name="manualLatitude" placeholder="Enter latitude">
+
+            <label for="manualLongitude">Longitude:</label>
+            <input type="text" id="manualLongitude" name="manualLongitude" placeholder="Enter longitude">
+        </div>
+
+        <label for="categoryOption">Choose a category:</label>
+        <select id="categoryOption" name="categoryOption">
+            <option value="hot dogs">Hot Dogs</option>
+            <option value="coffee">Coffee and Tea</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Vegan">Vegan Options</option>
+            <option value="tacos">Mexican Cuisine</option>
+            <!-- Add more options for other categories -->
+        </select>
+        
+        <label for="halalCheckbox">Halal Only:</label>
+        <input type="checkbox" id="halalCheckbox" name="halalCheckbox">
+
+        <button type="button" onclick="filterByCategory()">Filter by Category</button>
+        <button type="button" onclick="filterHalalCarts()">Filter Halal Carts</button>
+        <button type="button" onclick="getLocation()">Get Nearby Food Trucks</button> 
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        function getLocation() {
+            const locationOption = document.getElementById("locationOption").value;
+        
+            if (locationOption === "geolocation") {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            } else {
+                // Use manually entered coordinates
+                const manualLatitude = document.getElementById("manualLatitude").value;
+                const manualLongitude = document.getElementById("manualLongitude").value;
+                const halalCheckbox = document.getElementById("halalCheckbox").checked;
+        
+                // Construct the API request URL
+                let url = `/api/foodtrucks/nearby?lat=${manualLatitude}&lon=${manualLongitude}&radius=2`;
+        
+                // Append halal filter if the checkbox is checked
+                if (halalCheckbox) {
+                    url += '&halal=true';
+                }
+        
+                // Make an AJAX request to the Flask API with manual coordinates
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultDiv = document.getElementById("result");
+                        resultDiv.innerHTML = "<h2>Nearby Food Trucks:</h2>";
+                        data.food_trucks.forEach(truck => {
+                            resultDiv.innerHTML +=                         
+                            `<p>   <h3>  ${truck.name}</h3> 
+                                <br>
+                                <b>Distance: </b>${truck.distance.toFixed(2)} km
+                                <br>  Location: ${truck.location_description}<br>
+                                <b> Food Items: </b> ${truck.food_items.join(', ')}<br>
+                            </p>`;
+                        });
+                    })
+                    .catch(error => console.error("Error:", error));
+            }
+        }
+
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            document.getElementById("latitude").value = latitude;
+            document.getElementById("longitude").value = longitude;
+
+            // Make an AJAX request to the Flask API
+            fetch(`/api/foodtrucks/nearby?lat=${latitude}&lon=${longitude}&radius=2`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById("result");
+                    resultDiv.innerHTML = "<h2>Nearby Food Truck:</h2>";
+                    data.food_trucks.forEach(truck => {
+                        resultDiv.innerHTML += 
+                        `<p>  <h3>  ${truck.name}</h3>
+                            <b>Distance: </ b>${truck.distance.toFixed(2)} km
+                            <br><b>Location:</b> ${truck.location_description}<br>
+                            <b> Food Items: </b> ${truck.food_items.join(', ')}<br>
+                        </p>`;
+                    });
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        // Show/hide manual coordinates based on the selected option
+        document.getElementById("locationOption").addEventListener("change", function() {
+            const manualCoordsDiv = document.getElementById("manualCoords");
+            if (this.value === "manual") {
+                manualCoordsDiv.style.display = "block";
+            } else {
+                manualCoordsDiv.style.display = "none";
+            }
+        });
+                // Function to filter Halal carts
+                function filterHalalCarts() {
+                  // Make an AJAX request to the Flask API to filter Halal carts
+                  fetch(`/api/foodtrucks/filter/halal`)
+                      .then(response => response.json())
+                      .then(data => {
+                          const resultDiv = document.getElementById("result");
+                          resultDiv.innerHTML = "<h2>Halal Carts </h2>";
+                          data.food_trucks.forEach(truck => {
+                            resultDiv.innerHTML += `
+                            <p>
+                                <h3>  ${truck.name}</h3>
+                                <b>Food Items: </b> ${truck.food_items.join(', ')}<br>
+                                <b>Location: </b> ${truck.location_description}<br>
+                                <b>Distance: </b> ${truck.distance.toFixed(2)}km
+                                
+                                
+                            </p>`;
+                    });
+                      })
+                      
+                      .catch(error => console.error("Error:", error));
+              } 
+              function filterByCategory() {
+                const categoryOption = document.getElementById("categoryOption").value;
+                const halalCheckbox = document.getElementById("halalCheckbox").checked;
+                
+                let url = `/api/foodtrucks/filter/category?category=${encodeURIComponent(categoryOption)}`;
+                
+                if (halalCheckbox) {
+                    url += '&halal=true';
+                }
+                
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultDiv = document.getElementById("result");
+                        resultDiv.innerHTML = `<h2>${categoryOption} Food Trucks:</h2>`;
+                        data.food_trucks.forEach(truck => {
+                            resultDiv.innerHTML += `
+                            <p>
+                                <h3>  ${truck.name}</h3>                                     
+                                <b>Latitude</b> ${truck.latitude}<br>
+                                <b>Longitude</b> ${truck.longitude}<br>
+                               <b> Food Items: </b>${truck.food_items.join(', ')}<br>
+                                Distance: ${truck.distance.toFixed(2)} km<br>
+                            </p>`;
+                        });
+                    })
+                    .catch(error => console.error("Error:", error));
+            }
+                        
+    </script>
+</body>
+</html>
