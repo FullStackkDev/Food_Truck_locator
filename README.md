@@ -67,5 +67,8 @@ The user interface is designed for ease of use and clarity:
 
 # Screenshots of task
 - ![image](https://github.com/FullStackkDev/Food_Truck_locator/assets/36064269/9bd00422-0b28-4220-ad48-68dc27745df7)
-- 
-- 
+- ![image](https://github.com/FullStackkDev/Food_Truck_locator/assets/36064269/74762560-5d70-47d6-b986-10732aaefffc)
+- ![image](https://github.com/FullStackkDev/Food_Truck_locator/assets/36064269/be858b53-061f-41ca-af26-dbbbd46c2016)
+- ![image](https://github.com/FullStackkDev/Food_Truck_locator/assets/36064269/f7199053-24fc-4188-8b5c-1a0c5e91f6cb)
+- ![image](https://github.com/FullStackkDev/Food_Truck_locator/assets/36064269/b8a682a2-8648-4f57-bfa9-f45774edc7c6)
+
