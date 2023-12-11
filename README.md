@@ -64,3 +64,8 @@ The user interface is designed for ease of use and clarity:
 - Form for selecting location options, categories, and halal filter.
 - Buttons to trigger specific functionalities (Get Nearby Food Trucks, Filter Halal Carts, Filter by Category).
 - Results are displayed below the form, showing relevant information about food trucks.
+
+# Screenshots of task
+- ![image](https://github.com/FullStackkDev/Food_Truck_locator/assets/36064269/9bd00422-0b28-4220-ad48-68dc27745df7)
+- 
+- 
