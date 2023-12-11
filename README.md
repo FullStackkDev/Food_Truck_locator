@@ -40,7 +40,7 @@ This web application allows users to find nearby food trucks based on their loca
 
 1. **Clone the repository** :
 
-git clone : https://github.com/your-username/food-truck-locator.git
+git clone https://github.com/FullStackkDev/Food_Truck_locator.git food-truck-locator
 
 **2. Navigate to the project directory:**
 
