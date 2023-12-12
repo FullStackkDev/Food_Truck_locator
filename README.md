@@ -48,7 +48,7 @@ cd food-truck-locator
 
 **3. Install dependencies:**
 
-pip install -r requirements.txtll -r requirem
+pip install -r requirements.txt
 
 **4. Run the Flask application:**
 
